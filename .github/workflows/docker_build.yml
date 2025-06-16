@@ -1,0 +1,24 @@
+name: Build Docker Image with JFrog NPM Package
+
+on:
+  push:
+    branches: test
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image with JFrog token
+        run: |
+          docker build  --build-arg JFROG_TOKEN=${{ secrets.JFROG_TOKEN }} -t esdoc-taffy-test .
+      
+      - name: Run Docker image and verify taffydb installation
+        run: |
+          docker run --rm esdoc-taffy-test /bin/bash -c "ls -l node_modules/taffydb"
